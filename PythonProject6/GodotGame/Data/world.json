@@ -1,0 +1,9 @@
+{
+  "countries": [
+    {"id": "china", "name": "中华", "gold": 2000, "food": 1500, "military": 300, "population": 50000, "technology": 5},
+    {"id": "japan", "name": "日本", "gold": 1500, "food": 800, "military": 200, "population": 20000, "technology": 7},
+    {"id": "korea", "name": "朝鲜", "gold": 800, "food": 600, "military": 150, "population": 10000, "technology": 4},
+    {"id": "mongolia", "name": "蒙古", "gold": 500, "food": 400, "military": 100, "population": 5000, "technology": 2},
+    {"id": "vietnam", "name": "越南", "gold": 600, "food": 500, "military": 120, "population": 8000, "technology": 3}
+  ]
+}

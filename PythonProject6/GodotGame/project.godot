@@ -1,0 +1,8 @@
+; Engine configuration file.
+[application]
+config/name="LLMGrandStrategy"
+run/main_scene="res://Scenes/Main.tscn"
+config/features=PackedStringArray("4.4", "C#", ".NET")
+
+[dotnet]
+project/assembly_name="LLMGrandStrategy"
