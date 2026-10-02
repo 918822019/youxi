@@ -1,0 +1,7 @@
+:root { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans CJK SC', sans-serif; color: #e8e6d4; background: #1d2a28; font-synthesis: none; }
+* { box-sizing: border-box; }
+body { margin: 0; overflow-x: hidden; }
+button { font: inherit; }
+button:focus-visible { outline: 2px solid #f0d19a; outline-offset: 1px; }
+::-webkit-scrollbar { width: 7px; }
+::-webkit-scrollbar-thumb { background: #76836c; }
