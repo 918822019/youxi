@@ -49,6 +49,8 @@ youxi/
 │   ├── agents/scripted.py    # AI 国家决策器
 │   ├── tests/                # 规则及接口测试
 │   └── saves/                # 运行时存档（Git 忽略）
+├── archive/godot-strategy/   # 早期 Godot/C# 战略游戏原型（独立于 Web 版）
+├── .gitignore                # 依赖、缓存及本地生成文件排除规则
 └── README.md
 ```
 

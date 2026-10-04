@@ -1,9 +1,22 @@
+# Frontend dependencies and build output
 frontend/node_modules/
 frontend/dist/
 frontend/*.tsbuildinfo
-backend/.venv/
+
+# Python environments, caches and runtime saves
+.venv/
 __pycache__/
+*.py[cod]
 .pytest_cache/
-.DS_Store
 backend/saves/
+
+# IDE and operating system files
 .idea/
+.run/
+.DS_Store
+
+# Archived Godot/.NET prototype build output
+.godot/
+.mono/
+bin/
+obj/
