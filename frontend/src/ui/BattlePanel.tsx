@@ -1,4 +1,5 @@
 import type { GameCommand, PlayerView } from '../contracts/game'
+import { IconRoute, IconSword } from './icons'
 import styles from './BattlePanel.module.css'
 
 interface Props {
@@ -15,7 +16,7 @@ export function BattlePanel({ view, busy, onCommand, onSelect }: Props) {
   return <section className={styles.panel} aria-label="战斗指挥">
     <div className={styles.heading}><span>战斗指挥 / OPERATIONS</span><b>{active.length} 道执行中</b></div>
     {active.length ? active.map((unit) => <article className={styles.card} key={unit.id}>
-      <div className={styles.cardTitle}><strong>{unit.name}</strong><span>{unit.order === 'attack' ? '⚔ 进攻' : '➜ 调动'}</span></div>
+      <div className={styles.cardTitle}><strong>{unit.name}</strong><span>{unit.order === 'attack' ? <><IconSword /> 进攻</> : <><IconRoute /> 调动</>}</span></div>
       <div className={styles.meta}>{names.get(unit.cityId)} → {names.get(unit.targetId ?? '') ?? '未知'} · {unit.strength ?? '?'} 人</div>
       <div className={styles.route} aria-label={`${unit.name}行军路线`}>
         {[unit.cityId, ...unit.route].map((id, index) => <span key={`${id}-${index}`} className={index === 0 ? styles.origin : ''}>{names.get(id) ?? id}</span>)}

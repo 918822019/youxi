@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { AiDebug, GameCommand } from '../contracts/game'
 import { MapCanvas } from '../map/MapCanvas'
 import type { MapMode } from '../map/MapRenderer'
 import { gameApi } from '../network/gameApi'
 import { useGameStore } from '../stores/gameStore'
 import { AiDebugPanel } from '../ui/AiDebugPanel'
+import { IconCrest, IconGear, IconGold, IconMove, IconSupply, IconUnit } from '../ui/icons'
 import { CityPanel } from '../ui/CityPanel'
 import { ReportsPanel } from '../ui/ReportsPanel'
 import { ProductionPanel } from '../ui/ProductionPanel'
@@ -23,6 +24,8 @@ export function App() {
   const [error, setError] = useState<string | null>(null)
   const [archiveMessage, setArchiveMessage] = useState<string | null>(null)
   const [aiDebug, setAiDebug] = useState<AiDebug | null>(null)
+  const [toasts, setToasts] = useState<{ id: number; turn: number; text: string }[]>([])
+  const lastReportId = useRef(0)
   const selectedCity = view?.cities.find((city) => city.id === selectedCityId) ?? null
   const friendlyCities = view?.cities.filter((city) => city.owner === view.country) ?? []
   const hostileCities = view?.cities.filter((city) => city.owner !== view.country) ?? []
@@ -88,18 +91,51 @@ export function App() {
     return () => window.clearInterval(timer)
   }, [autoPlay, speed, view, execute])
 
+  // Battlefield flash bulletins: surface the newest reports over the map instead of
+  // making the player watch the rail. Resync lastReportId whenever nothing is newer so
+  // loads/resets (whose ids jump backwards) neither flood nor stay silent forever.
+  useEffect(() => {
+    const reports = view?.reports ?? []
+    const fresh = reports.filter((report) => report.id > lastReportId.current).slice(-2)
+    lastReportId.current = reports.at(-1)?.id ?? lastReportId.current
+    if (!fresh.length) return
+    setToasts((current) => [...current, ...fresh].slice(-3))
+    // Not tied to the effect lifecycle: the next view update must not cancel the expiry.
+    const ids = new Set(fresh.map((report) => report.id))
+    window.setTimeout(() => {
+      setToasts((current) => current.filter((toast) => !ids.has(toast.id)))
+    }, 4500)
+  }, [view])
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent): void => {
+      const tag = (event.target as HTMLElement | null)?.tagName
+      if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA' || tag === 'BUTTON') return
+      if (event.key === ' ') {
+        event.preventDefault()
+        if (!busy && !view?.winner) void execute()
+      } else if (event.key === 'a' || event.key === 'A') {
+        setAutoPlay((value) => !value)
+      } else if (event.key === 'm' || event.key === 'M') {
+        setMapMode((mode) => (mode === 'political' ? 'military' : 'political'))
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [busy, view?.winner, execute])
+
   return <main className={styles.layout}>
     <header className={styles.topbar}>
-      <div className={styles.brand}><span className={styles.crest}>✦</span><div><span className={styles.eyebrow}>YOUXI / GRAND STRATEGY</span><strong>边境战区</strong></div></div>
+      <div className={styles.brand}><span className={styles.crest}><IconCrest size={22} /></span><div><span className={styles.eyebrow}>边境战区指挥部</span><strong>边境战区</strong></div></div>
       <div className={styles.resources} aria-label="国家态势">
-        <div><small>国库储备</small><strong>◈ {view?.gold ?? '—'}</strong></div>
-        <div><small>装备库存</small><strong>⚙ {view?.equipment ?? '—'}</strong></div>
-        <div><small>补给库存</small><strong>▤ {view?.supplies ?? '—'}</strong></div>
+        <div><small>国库储备</small><strong key={`gold-${view?.gold}`} className={styles.bump}><IconGold /> {view?.gold ?? '—'}</strong></div>
+        <div><small>装备库存</small><strong key={`equipment-${view?.equipment}`} className={styles.bump}><IconGear /> {view?.equipment ?? '—'}</strong></div>
+        <div><small>补给库存</small><strong key={`supplies-${view?.supplies}`} className={styles.bump}><IconSupply /> {view?.supplies ?? '—'}</strong></div>
         <div><small>控制地区</small><strong>{friendlyCities.length} <em>/ {view?.cities.length ?? '—'}</em></strong></div>
         <div><small>作战部队</small><strong>{friendlyUnits.length}</strong></div>
       </div>
       <div className={styles.timeControls}>
-        <div className={styles.date}><small>战役时间</small><strong>第 {view?.turn ?? '—'} 日</strong></div>
+        <div className={styles.date}><small>战役时间</small><strong key={`turn-${view?.turn}`} className={styles.bump}>第 {view?.turn ?? '—'} 日</strong></div>
         <button type="button" className={styles.playButton} disabled={!view || !!view.winner} onClick={() => setAutoPlay((value) => !value)} aria-label={autoPlay ? '暂停推进' : '自动推进'}>{autoPlay ? 'Ⅱ' : '▶'}</button>
         <button type="button" className={styles.dayButton} disabled={busy || !view || !!view.winner} onClick={() => void execute()}>+ 1 日</button>
         <button type="button" className={styles.speedButton} title="切换推进速度" onClick={() => setSpeed((value) => value % 3 + 1)}>{speed}×</button>
@@ -110,7 +146,7 @@ export function App() {
       <aside className={styles.leftRail} aria-label="国家指挥栏">
         <div className={styles.sectionHeading}><span>01 / 战略总览</span><span className={styles.tinyDot}>● LIVE</span></div>
         <div className={styles.overview}>
-          <span className={styles.seal}>✦</span>
+          <span className={styles.seal}><IconCrest size={26} /></span>
           <div><small>玩家阵营 · 国家指挥部</small><h2>西境同盟</h2><p>守住王都，夺取东港</p></div>
         </div>
         <div className={styles.sectionHeading}><span>02 / 工业生产</span><span>{view?.factories ?? '—'} 座工厂</span></div>
@@ -120,7 +156,7 @@ export function App() {
           {friendlyUnits.map((unit) => {
             const city = view?.cities.find((place) => place.id === unit.cityId)
             return <button type="button" className={`${styles.unitCard} ${selectedCityId === unit.cityId ? styles.activeUnit : ''}`} key={unit.id} onClick={() => selectCity(unit.cityId)}>
-              <span className={styles.unitSymbol}>▣</span><span className={styles.unitMeta}><strong>{unit.name}</strong><small>{city?.name ?? '未知地区'} · {unit.order ? `${unit.order === 'attack' ? '进攻' : '调动'}中 / ${unit.daysRemaining + Math.max(0, unit.route.length - 1) * 2} 日` : '待命'}{unit.supplied === false ? ' · 断补给' : ''}</small></span><span className={styles.unitStrength}>{unit.strength ?? '?'}</span>
+              <span className={styles.unitSymbol}><IconUnit size={18} /></span><span className={styles.unitMeta}><strong>{unit.name}</strong><small>{city?.name ?? '未知地区'} · {unit.order ? `${unit.order === 'attack' ? '进攻' : '调动'}中 / ${unit.daysRemaining + Math.max(0, unit.route.length - 1) * 2} 日` : '待命'}{unit.supplied === false ? ' · 断补给' : ''}</small></span><span className={styles.unitStrength}>{unit.strength ?? '?'}</span>
             </button>
           })}
           {friendlyUnits.length === 0 && <p className={styles.placeholder}>暂无可指挥的部队</p>}
@@ -130,9 +166,12 @@ export function App() {
       </aside>
 
       <section className={styles.mapArea} aria-label="战略地图">
-        <MapCanvas cities={view?.cities ?? []} units={view?.units ?? []} selectedCityId={selectedCityId} mode={mapMode} enabled={!!view && !busy && !view.winner} onSelect={selectCity} onOrder={(command) => void execute(command)} />
-        <div className={styles.mapTitle}><small>战区地图 / THE BORDER CAMPAIGN</small><strong>东部边境</strong><span>拖动部队至目标省份自动寻路 · 拖动空白处平移 · 滚轮缩放</span></div>
-        <div className={styles.mapBadge}>✥ <span>当前战线</span><strong>{friendlyCities.length} : {hostileCities.length}</strong></div>
+        <MapCanvas cities={view?.cities ?? []} units={view?.units ?? []} turn={view?.turn ?? 0} selectedCityId={selectedCityId} mode={mapMode} enabled={!!view && !busy && !view.winner} onSelect={selectCity} onOrder={(command) => void execute(command)} />
+        <div className={styles.mapTitle}><small>战区地图</small><strong>东部边境</strong><span>拖动部队至目标省份自动寻路 · 拖动空白处平移 · 滚轮缩放 · 空格推进 · A 自动 · M 视角</span></div>
+        <div className={styles.toasts} aria-live="polite">{toasts.map((toast) =>
+          <p className={styles.toast} key={toast.id}><small>第 {toast.turn} 日</small>{toast.text}</p>
+        )}</div>
+        <div className={styles.mapBadge}><IconMove /> <span>当前战线</span><strong>{friendlyCities.length} : {hostileCities.length}</strong></div>
         <div className={styles.mapFooter}><div className={styles.legend}><span><i className={styles.ally} /> 西境同盟</span><span><i className={styles.enemy} /> 东境军</span><span><i className={styles.border} /> 交战边界</span></div>
           <div className={styles.modeSwitch}><button type="button" className={mapMode === 'political' ? styles.selectedMode : ''} onClick={() => setMapMode('political')}>政治</button><button type="button" className={mapMode === 'military' ? styles.selectedMode : ''} onClick={() => setMapMode('military')}>军势</button></div>
         </div>
@@ -156,6 +195,6 @@ export function App() {
         {aiDebug && <AiDebugPanel debug={aiDebug} />}
       </aside>
     </div>
-    <footer className={styles.statusBar}><span><i /> 战略态势系统 / ONLINE</span><span>最新奏报：{latestReport?.text ?? '等待战场数据…'}</span><span>第 {view?.turn ?? '—'} 日 · {autoPlay ? `${speed}× 运行中` : '已暂停'}</span></footer>
+    <footer className={styles.statusBar}><span><i /> 战略态势系统</span><span>最新奏报：{latestReport?.text ?? '等待战场数据…'}</span><span>第 {view?.turn ?? '—'} 日 · {autoPlay ? `${speed}× 运行中` : '已暂停'}</span></footer>
   </main>
 }

@@ -1,10 +1,10 @@
 .panel { border-top: 1px solid #4b5a50; }
 .heading { display: flex; justify-content: space-between; gap: 6px; padding: 13px 14px; background: #283c33; color: #e3cfa4; font-size: 11px; letter-spacing: .06em; }
 .heading b { color: #d7e0bb; font-weight: normal; letter-spacing: 0; white-space: nowrap; }
-.card { padding: 12px 13px 15px; border-top: 1px solid #526351; background: #35493b; }
+.card { padding: 12px 13px 15px; border-top: 1px solid #526351; background: #35493b; box-shadow: inset 0 1px 0 #ffffff10; }
 .cardTitle { display: flex; justify-content: space-between; color: #f0e7ce; font-size: 13px; }
 .cardTitle span { color: #e3bc8c; font-size: 11px; }
-.meta { font-size: 11px; color: #d0d9c9; line-height: 1.6; margin: 7px 0; }
+.meta { font-size: 12px; color: #d0d9c9; line-height: 1.6; margin: 7px 0; }
 .warning { color: #eea695; }
 .route { display: flex; flex-wrap: wrap; gap: 3px; margin: 10px 0; }
 .route span { font-size: 10px; padding: 3px 6px; color: #e6dcc0; border: 1px solid #80906e; background: #405c44; }
@@ -12,11 +12,11 @@
 .route span:last-child::after { content: ''; }
 .route .origin { background: #4d6550; }
 .actions { display: flex; gap: 5px; }
-.actions button { flex: 1; padding: 7px 2px; font-size: 11px; color: #e8e4d2; border: 1px solid #9caa80; background: #4a614b; cursor: pointer; }
+.actions button { flex: 1; padding: 7px 2px; font-size: 11px; color: #e8e4d2; border: 1px solid #9caa80; background: #4a614b; cursor: pointer; box-shadow: var(--material-btn); }
 .actions button:last-child { border-color: #d3a78b; background: #6a413a; }
 .actions button:hover:not(:disabled) { filter: brightness(1.15); }
 .actions button:disabled { opacity: .5; cursor: wait; }
-.empty { color: #acbbaa; padding: 10px 14px 14px; font-size: 11px; line-height: 1.6; }
-.battleLog { padding: 12px 13px; background: #293d34; font-size: 11px; color: #c8d4bf; }
+.empty { color: #acbbaa; padding: 10px 14px 14px; font-size: 12px; line-height: 1.6; }
+.battleLog { padding: 12px 13px; background: #293d34; font-size: 12px; color: #c8d4bf; }
 .battleLog strong { color: #dec49a; }
 .battleLog p { line-height: 1.5; margin: 7px 0; }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { CityView, GameCommand, PlayerView } from '../contracts/game'
+import { IconTarget } from './icons'
 import styles from './Panels.module.css'
 
 interface Props {
@@ -26,7 +27,7 @@ export function CityPanel({ city, view, busy, onCommand }: Props) {
 
   return <section className={styles.cityPanel} aria-label="地区指挥">
     {city ? <>
-      <div className={styles.cityTitle}><div><small>选定地区 / PROVINCE</small><h3>{city.name}</h3></div><span className={own ? styles.friendly : styles.hostile}>{own ? '我方控制' : '敌方控制'}</span></div>
+      <div className={styles.cityTitle}><div><small>选定地区</small><h3>{city.name}</h3></div><span className={own ? styles.friendly : styles.hostile}>{own ? '我方控制' : '敌方控制'}</span></div>
       <p className={styles.description}>{city.description}</p>
       <div className={styles.cityStats}><div><small>城防</small><strong>{city.garrison ?? '—'}</strong></div><div><small>驻军</small><strong>{stationed.reduce((sum, unit) => sum + (unit.strength ?? 0), 0) || '—'}</strong></div><div><small>工厂</small><strong>{city.factories}</strong></div></div>
       {own && <p className={city.supplied ? styles.supplyGood : styles.supplyBad}>{city.supplied ? '● 补给线畅通' : '● 与指挥部失联 · 无法征募及进攻'}</p>}
@@ -57,6 +58,6 @@ export function CityPanel({ city, view, busy, onCommand }: Props) {
         </div>}
         {!ownUnits.length && <p className={styles.muted}>该地区暂无部队，可消耗资源组建一支新军。</p>}
       </div> : <p className={styles.muted}>敌方省份无法直接下令。选择我方部队，拖动到目标省份或在面板选择最终目的地。</p>}
-    </> : <div className={styles.empty}><span>⌖</span><strong>选择一个省份</strong><p>点击地图省份或左侧部队，查看情报；拖动地图上的部队标识即可下令。</p></div>}
+    </> : <div className={styles.empty}><span><IconTarget size={40} /></span><strong>选择一个省份</strong><p>点击地图省份或左侧部队，查看情报；拖动地图上的部队标识即可下令。</p></div>}
   </section>
 }

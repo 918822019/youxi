@@ -1,4 +1,16 @@
-:root { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans CJK SC', sans-serif; color: #e8e6d4; background: #1d2a28; font-synthesis: none; }
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans CJK SC', sans-serif;
+  color: #e8e6d4; background: #1d2a28; font-synthesis: none;
+  --heading-bg: #24342d; --heading-fg: #d9caa6; --heading-fg-muted: #aebbaa;
+  --heading-border-top: 1px solid #68735863; --heading-border-bottom: 1px solid #1a2922;
+  --heading-letter-spacing: .15em; --heading-padding: 12px 16px;
+  /* Shared widget material: top highlight + bottom shade + drop, so buttons/cards read
+     as pressed metal plates instead of flat colour blocks. */
+  --material-btn: inset 0 1px 0 #ffffff1f, inset 0 -1px 0 #00000052, 0 1px 2px #00000040;
+  --material-press: inset 0 2px 5px #00000066;
+  --texture-dots: radial-gradient(#ffffff06 1px, transparent 1px);
+}
+button:active:not(:disabled) { transform: translateY(1px); box-shadow: var(--material-press); }
 * { box-sizing: border-box; }
 body { margin: 0; overflow-x: hidden; }
 button { font: inherit; }
