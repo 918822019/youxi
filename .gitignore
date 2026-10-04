@@ -20,3 +20,6 @@ backend/saves/
 .mono/
 bin/
 obj/
+
+# Local bug-report screenshots dropped in the repo root for review
+/img*.png
