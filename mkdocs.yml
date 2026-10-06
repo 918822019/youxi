@@ -1,0 +1,46 @@
+site_name: Youxi · 战略战役切片
+site_description: 九省份单人战役的规则与开发文档
+site_url: https://918822019.github.io/youxi/
+repo_url: https://github.com/918822019/youxi
+repo_name: 918822019/youxi
+edit_uri: edit/master/docs/
+
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - content.action.edit
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: 切换为深色
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: 切换为浅色
+
+nav:
+  - 首页: index.md
+  - 玩法规则:
+      - 地图与势力: rules/world.md
+      - 行军与军令: rules/movement.md
+      - 战斗结算: rules/combat.md
+      - 经济与生产: rules/economy.md
+      - 补给与失联: rules/supply.md
+  - 开发指南: development.md
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true

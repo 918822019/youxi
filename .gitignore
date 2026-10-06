@@ -23,3 +23,7 @@ obj/
 
 # Local bug-report screenshots dropped in the repo root for review
 /img*.png
+
+# MkDocs build output and caches
+site/
+.cache/
